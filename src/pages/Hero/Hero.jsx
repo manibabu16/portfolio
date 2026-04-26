@@ -48,13 +48,14 @@ export default function Hero() {
     "GitHub for DevOps Enthusiast",
   ];
 
-  const [code] = useState(`
+  const fullCode = `
 const profile = {
     name: 'Mani Babu',
-    title: ' MERN-Full-Stack Developer | Cloud Enthusiast | Problem Solver',
+    title: ' MERN-Full-Stack Developer | Graphic Designer | UI/UX Master',
     skills: [
         'React', 'NodeJS', 'Redux', 'Express',
-        'MySQL', 'MongoDB', 'Git'
+        'MySQL', 'MongoDB', 'Git',
+        'Photoshop', 'Illustrator', 'Figma'
     ],
     hardWorker: true,
     quickLearner: true,
@@ -70,68 +71,104 @@ const profile = {
         );
     }
 };
-  `);
+  `;
+
+const [code, setCode] = useState("");
+
+useEffect(() => {
+  let index = 0;
+  let typingInterval;
+
+  const startTyping = () => {
+    typingInterval = setInterval(() => {
+      setCode(fullCode.slice(0, index));
+      index++;
+
+      if (index > fullCode.length) {
+        clearInterval(typingInterval);
+
+        // wait after full typing complete
+        setTimeout(() => {
+          setCode("");
+          index = 0;
+          startTyping(); // restart typing again
+        }, 3000); // 3 sec delay after complete
+      }
+    }, 35);
+  };
+
+  startTyping();
+
+  return () => clearInterval(typingInterval);
+}, []);
 
   useEffect(() => {
-    Prism.highlightAll();
+  Prism.highlightAll();
+}, [code]);
 
-    // Add CSS animation for grid and dots
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes gridPulse {
-        0%, 100% { opacity: 0.1; }
-        50% { opacity: 0.3; }
+useEffect(() => {
+  // Add CSS animation for grid and dots
+  const style = document.createElement("style");
+
+  style.textContent = `
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    @media screen and (width: 1366px) and (height: 768px),
+           screen and (width: 1367px) and (height: 768px),
+           screen and (width: 1368px) and (height: 769px) {
+      .hero {
+        padding-top: 12rem !important;
       }
-      
-      @keyframes dotPulse {
-        0%, 100% { opacity: 0.2; transform: scale(0.8); }
-        50% { opacity: 0.5; transform: scale(1.2); }
+
+      .hero .container {
+        padding-top: 10rem !important;
+        margin-top: 5rem !important;
       }
-      
-      /* Media query for 1366x768 resolution */
-      @media screen and (width: 1366px) and (height: 768px), 
-             screen and (width: 1367px) and (height: 768px),
-             screen and (width: 1368px) and (height: 769px) {
-        .hero {
-          padding-top: 12rem !important;
-        }
-        .hero .container {
-          padding-top: 10rem !important;
-          margin-top: 5rem !important;
-        }
-        .hero-section-padding {
-          padding-top: 12rem !important;
-        }
+
+      .hero-section-padding {
+        padding-top: 12rem !important;
       }
-    `;
-    document.head.appendChild(style);
+    }
+  `;
 
-    // Apply extra padding for 1366x768 resolution
-    const checkResolution = () => {
-      const isTargetResolution =
-        window.innerWidth >= 1360 &&
-        window.innerWidth <= 1370 &&
-        window.innerHeight >= 760 &&
-        window.innerHeight <= 775;
+  document.head.appendChild(style);
 
-      if (isTargetResolution) {
-        document.documentElement.style.setProperty(
-          "--hero-padding-top",
-          "12rem"
-        );
-      } else {
-        document.documentElement.style.setProperty("--hero-padding-top", "0");
-      }
-    };
+  const checkResolution = () => {
+    const isTargetResolution =
+      window.innerWidth >= 1360 &&
+      window.innerWidth <= 1370 &&
+      window.innerHeight >= 760 &&
+      window.innerHeight <= 775;
 
-    checkResolution();
-    window.addEventListener("resize", checkResolution);
+    if (isTargetResolution) {
+      document.documentElement.style.setProperty(
+        "--hero-padding-top",
+        "12rem"
+      );
+    } else {
+      document.documentElement.style.setProperty(
+        "--hero-padding-top",
+        "0"
+      );
+    }
+  };
 
-    return () => {
-      document.head.removeChild(style);
-      window.removeEventListener("resize", checkResolution);
-    };
-  }, [code]);
+  checkResolution();
+  window.addEventListener("resize", checkResolution);
+
+  return () => {
+    document.head.removeChild(style);
+    window.removeEventListener("resize", checkResolution);
+  };
+}, []);
 
   return (
     <>
